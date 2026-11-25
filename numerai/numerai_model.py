@@ -2,8 +2,10 @@
 'submit' predicts the live round and uploads. Never stake NMR. Dataset version names change: check numer.ai/data."""
 import os, sys, json, pandas as pd
 from numerapi import NumerAPI
-V = os.environ.get("NUMERAI_DATA_VERSION", "v5.0")
 napi = NumerAPI(os.environ.get("NUMERAI_PUBLIC_ID"), os.environ.get("NUMERAI_SECRET_KEY"))
+# newest dataset version that has features, train and live files (v6.0 as of Nov 2026)
+_vs = sorted({d.split("/")[0] for d in napi.list_datasets() if d.endswith("live.parquet") and d.startswith("v")}, key=lambda v: [int(x) for x in v[1:].split(".")])
+V = os.environ.get("NUMERAI_DATA_VERSION") or _vs[-1]; print("Numerai dataset version", V)
 mode = sys.argv[1] if len(sys.argv) > 1 else "submit"
 napi.download_dataset(f"{V}/features.json", "numerai/features.json")
 feats = json.load(open("numerai/features.json"))["feature_sets"]["small"]

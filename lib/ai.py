@@ -16,7 +16,11 @@ def write(task, facts, max_words=120):
             json={"model": CFG["ai"]["model"], "max_tokens": CFG["ai"]["max_tokens"], "system": RULES,
                   "messages": [{"role": "user", "content": f"{task} Max {max_words} words.\nFacts:\n{text_facts}"}]})
         r.raise_for_status()
-        return r.json()["content"][0]["text"].strip()
+        j = r.json()
+        text = "".join(b.get("text", "") for b in j.get("content", []) if b.get("type") == "text").strip()
+        if not text: raise ValueError(f"no text in response: {str(j)[:300]}")
+        return text
     except Exception as e:
-        print("AI note failed, using template:", e)
+        body = getattr(getattr(e, "response", None), "text", "")
+        print("AI note failed, using template:", e, body[:300])
         return " ".join(facts[:6])
