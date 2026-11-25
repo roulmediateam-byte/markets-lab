@@ -9,7 +9,7 @@ log = []
 if os.environ.get("KAGGLE_KEY") and "YOUR-" not in CFG["kaggle_dataset"]:
     json.dump({"title": "ASX Markets Lab daily", "id": CFG["kaggle_dataset"], "licenses": [{"name": "CC-BY-SA-4.0"}]}, open(os.path.join(EXP, "dataset-metadata.json"), "w"))
     r = subprocess.run(["kaggle", "datasets", "version", "-p", EXP, "-m", f"Daily update {TODAY}"], capture_output=True, text=True)
-    if "not found" in (r.stdout + r.stderr).lower(): r = subprocess.run(["kaggle", "datasets", "create", "-p", EXP, "--public"], capture_output=True, text=True)
+    if r.returncode != 0: r = subprocess.run(["kaggle", "datasets", "create", "-p", EXP, "--public"], capture_output=True, text=True)   # first run: dataset does not exist yet
     log.append("kaggle: " + (r.stdout + r.stderr)[-200:])
 if os.environ.get("HF_TOKEN") and "YOUR-" not in CFG["hf_dataset"]:
     from huggingface_hub import HfApi

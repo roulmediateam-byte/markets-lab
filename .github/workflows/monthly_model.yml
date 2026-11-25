@@ -6,7 +6,7 @@ on:
 jobs:
   train:
     runs-on: ubuntu-latest
-    env: {HF_TOKEN: "${{ secrets.HF_TOKEN }}", HF_MODEL_REPO: "${{ vars.HF_MODEL_REPO }}"}
+    env: {HF_TOKEN: "${{ secrets.HF_TOKEN }}", HF_MODEL_REPO: "${{ vars.HF_MODEL_REPO || 'ROUL34/finance-headline-sentiment' }}"}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

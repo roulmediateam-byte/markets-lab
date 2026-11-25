@@ -20,5 +20,6 @@ else:
     live = pd.read_parquet("/tmp/live.parquet", columns=feats)
     preds = lgb.Booster(model_file="numerai/model.txt").predict(live[feats])
     out = pd.Series(preds, index=live.index).rank(pct=True).to_frame("prediction"); out.to_csv("/tmp/preds.csv")
-    mid = napi.get_models()[os.environ["NUMERAI_MODEL_NAME"]]
+    models = {k.lower(): v for k, v in napi.get_models().items()}
+    mid = models[os.environ["NUMERAI_MODEL_NAME"].lower()]
     print(napi.upload_predictions("/tmp/preds.csv", model_id=mid))

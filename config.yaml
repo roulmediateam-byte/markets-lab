@@ -61,6 +61,6 @@ newsletter:
   provider: "buttondown"            # buttondown or ghost
   buttondown_url: "https://api.buttondown.email/v1/emails"
   ghost_admin_url: ""               # e.g. https://yourblog.ghost.io
-kaggle_dataset: "YOUR-KAGGLE-USERNAME/asx-markets-lab-daily"
-hf_dataset: "YOUR-HF-USERNAME/asx-markets-lab-daily"
-google_sheet_id: ""                 # sheet shared with the service account; feeds Tableau Public and Power BI
+kaggle_dataset: "roulmedia/asx-markets-lab-daily"
+hf_dataset: "ROUL34/asx-markets-lab-daily"
+google_sheet_id: "1aSJ5waGppKyViokIbjjhYbrcqMF5-AbFxuSoQjHrjec"                 # sheet shared with the service account; feeds Tableau Public and Power BI
