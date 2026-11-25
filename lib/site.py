@@ -36,5 +36,7 @@ def write_trackers_index(results):
     os.makedirs(os.path.join(SITE, "trackers"), exist_ok=True)
     rows = "".join(f"<li><a href='{CFG['site']['base_url']}/index.html#{r.id}'>{html.escape(r.title)}</a></li>" for r in results)
     open(os.path.join(SITE, "trackers.html"), "w").write(page("Trackers", f"<h2>Today's trackers ({len(results)})</h2><ul>{rows}</ul><p class='note'>Trackers with no new data on a given day are skipped.</p>"))
+    if not os.path.exists(os.path.join(SITE, "newsletter.html")):
+        open(os.path.join(SITE, "newsletter.html"), "w").write(page("Newsletter", "<h2>Newsletter</h2><p>A short daily email with the day's charts. Subscribe link coming soon.</p>"))
     if not os.path.exists(os.path.join(SITE, "about.html")):
         open(os.path.join(SITE, "about.html"), "w").write(page("About", "<h2>About</h2><p>An automated daily research log on Australian and Hong Kong markets, built in Python and GitHub Actions by Adam Lam (UNSW Information Systems). Code: github.com/roulmediateam-byte/markets-lab.</p>"))
