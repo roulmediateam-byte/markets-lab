@@ -12,14 +12,23 @@ feats = json.load(open("numerai/features.json"))["feature_sets"]["small"]
 import lightgbm as lgb
 if mode == "train":
     napi.download_dataset(f"{V}/train.parquet", "/tmp/train.parquet")
-    tr = pd.read_parquet("/tmp/train.parquet", columns=["era", "target"] + feats)
-    tr = tr[tr["era"].isin(tr["era"].unique()[::4])]          # every 4th era keeps memory low
+    import pyarrow.parquet as pq
+    names = pq.read_schema("/tmp/train.parquet").names
+    era = next((c for c in ("era", "date", "era_date") if c in names), None)      # v6 renamed the era column
+    tgt = "target" if "target" in names else next(c for c in names if c.startswith("target"))
+    print("columns used:", era, tgt, len(feats), "features")
+    tr = pd.read_parquet("/tmp/train.parquet", columns=([era] if era else []) + [tgt] + feats).rename(columns={tgt: "target"})
+    tr = tr[tr[era].isin(tr[era].unique()[::4])] if era else tr.iloc[::4]   # every 4th era keeps memory low
+    tr = tr.dropna(subset=["target"])
     m = lgb.LGBMRegressor(n_estimators=2000, learning_rate=0.01, max_depth=5, num_leaves=31, colsample_bytree=0.1)
     m.fit(tr[feats], tr["target"]); m.booster_.save_model("numerai/model.txt"); print("trained")
 else:
     if not os.path.exists("numerai/model.txt"): sys.exit("Run once with mode=train first")
     napi.download_dataset(f"{V}/live.parquet", "/tmp/live.parquet")
-    live = pd.read_parquet("/tmp/live.parquet", columns=feats)
+    import pyarrow.parquet as pq
+    idc = next((c for c in ("id", "numerai_ticker") if c in pq.read_schema("/tmp/live.parquet").names), None)
+    live = pd.read_parquet("/tmp/live.parquet", columns=feats + ([idc] if idc else []))
+    if idc: live = live.set_index(idc)          # v6 files carry the row id as a column
     preds = lgb.Booster(model_file="numerai/model.txt").predict(live[feats])
     out = pd.Series(preds, index=live.index).rank(pct=True).to_frame("prediction"); out.to_csv("/tmp/preds.csv")
     models = {k.lower(): v for k, v in napi.get_models().items()}
