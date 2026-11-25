@@ -1,0 +1,19 @@
+# Numerai: submits predictions Tuesday to Saturday. Never stake NMR. Train once first: run with mode=train.
+name: numerai
+on:
+  schedule: [{cron: "30 14 * * 2-6"}]
+  workflow_dispatch:
+    inputs: {mode: {description: "train or submit", default: "submit"}}
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env: {NUMERAI_PUBLIC_ID: "${{ secrets.NUMERAI_PUBLIC_ID }}", NUMERAI_SECRET_KEY: "${{ secrets.NUMERAI_SECRET_KEY }}", NUMERAI_MODEL_NAME: "${{ vars.NUMERAI_MODEL_NAME }}"}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install numerapi pandas pyarrow lightgbm
+      - run: python numerai/numerai_model.py ${{ github.event.inputs.mode || 'submit' }}
+      - run: |
+          git config user.name "markets-lab-bot"; git config user.email "markets-lab-bot@users.noreply.github.com"
+          git add numerai/*.txt numerai/*.json 2>/dev/null; git commit -m "Numerai $(date -u +%F)" && git pull --rebase && git push || true

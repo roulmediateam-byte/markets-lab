@@ -1,0 +1,12 @@
+pandas>=2.0
+numpy
+matplotlib
+requests
+pyyaml
+yfinance
+feedparser
+gTTS
+gspread
+google-auth
+huggingface_hub
+kaggle

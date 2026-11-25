@@ -1,0 +1,15 @@
+# 1st of each month: retrain the finance sentiment model and push it to Hugging Face (no public wording, no approval).
+name: monthly-model
+on:
+  schedule: [{cron: "0 9 1 * *"}]
+  workflow_dispatch:
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    env: {HF_TOKEN: "${{ secrets.HF_TOKEN }}", HF_MODEL_REPO: "${{ vars.HF_MODEL_REPO }}"}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install scikit-learn datasets huggingface_hub joblib pandas
+      - run: python hf/train_sentiment.py

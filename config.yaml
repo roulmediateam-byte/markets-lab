@@ -1,0 +1,66 @@
+# markets-lab configuration. Edit freely; every tracker reads from here.
+site:
+  title: "Adam Lam | Markets Lab"
+  author: "Adam Lam"
+  base_url: "https://roulmediateam-byte.github.io/markets-lab"
+  disclaimer: "General information only, not financial advice. Data may be delayed or wrong; check the original source."
+ai:
+  model: "claude-haiku-5-5"        # cheap model for daily notes; change if needed
+  max_tokens: 700
+core_etfs:                          # core daily ETF report (Yahoo Finance tickers)
+  VAS.AX: "Vanguard Australian Shares"
+  A200.AX: "Betashares Australia 200"
+  IVV.AX: "iShares S&P 500"
+  NDQ.AX: "Betashares Nasdaq 100"
+  VGS.AX: "Vanguard MSCI International"
+  VAF.AX: "Vanguard Australian Fixed Interest"
+  GOLD.AX: "Global X Physical Gold"
+  ETHI.AX: "Betashares Global Sustainability Leaders"
+benchmark: "^AXJO"
+fx: {AUDUSD=X: "AUD/USD", AUDHKD=X: "AUD/HKD", AUDCNH=X: "AUD/CNH", AUDJPY=X: "AUD/JPY"}
+volatility: {"^VIX": "US VIX", "^AXVI": "S&P/ASX 200 VIX"}
+commodities: {GC=F: "Gold", HG=F: "Copper", CL=F: "WTI crude", SI=F: "Silver", URA: "Uranium (URA ETF proxy)"}
+miners: {BHP.AX: "BHP", RIO.AX: "Rio Tinto", FMG.AX: "Fortescue", NST.AX: "Northern Star", PDN.AX: "Paladin Energy"}
+sectors:
+  "^AXEJ": "Energy"
+  "^AXMJ": "Materials"
+  "^AXNJ": "Industrials"
+  "^AXDJ": "Consumer Discretionary"
+  "^AXSJ": "Consumer Staples"
+  "^AXHJ": "Health Care"
+  "^AXFJ": "Financials"
+  "^AXIJ": "Information Technology"
+  "^AXTJ": "Communication Services"
+  "^AXUJ": "Utilities"
+  "^AXPJ": "A-REIT"
+hk_etfs:                            # price from Yahoo; NAV from nav_csv_urls if you add them (issuer sites)
+  "2800.HK": "Tracker Fund of Hong Kong"
+  "2828.HK": "Hang Seng China Enterprises ETF"
+  "3188.HK": "ChinaAMC CSI 300 ETF"
+hk_nav_csv_urls: {}                 # e.g. {"2800.HK": "https://...csv with Date,NAV"} ; check each site's terms first
+asic_short_url_pattern: "https://download.asic.gov.au/short-selling/RR{date}-001-SSDailyAggShortPos.csv"   # verify on asic.gov.au
+rba_tables:
+  yields: "https://www.rba.gov.au/statistics/tables/csv/f2-data.csv"
+  money_market: "https://www.rba.gov.au/statistics/tables/csv/f1-data.csv"
+  cpi: "https://www.rba.gov.au/statistics/tables/csv/g1-data.csv"
+  labour: "https://www.rba.gov.au/statistics/tables/csv/h5-data.csv"
+economic_calendar:                  # add dates as they are announced (RBA, ABS release calendars)
+  - {date: "2026-12-09", event: "Example: RBA monetary policy decision (CHECK DATE)"}
+announcement_feeds: []              # RSS/Atom URLs of ASX company announcements you are allowed to read automatically
+news_feeds: []                      # RSS feeds of market headlines for the sentiment index (check terms)
+job_feeds: []                       # RSS feeds of graduate job listings (check terms); posts link out only
+sec_13f_filers: {"0001067983": "Berkshire Hathaway", "0001350694": "Bridgewater Associates"}
+sec_user_agent: "Adam Lam lamyeelok16@gmail.com"   # SEC requires a real contact email
+forward_test:
+  ticker: "^AXJO"
+  rule: "Long when 20-day average is above 50-day average, else cash. Replace with your own model in trackers/t17_forward_test.py"
+postiz:                             # integration IDs from your Postiz dashboard (one per connected account)
+  base_url: "https://api.postiz.com/public/v1"
+  integrations: {linkedin: "", threads: "", x: "", instagram: "", tiktok: "", youtube: ""}
+newsletter:
+  provider: "buttondown"            # buttondown or ghost
+  buttondown_url: "https://api.buttondown.email/v1/emails"
+  ghost_admin_url: ""               # e.g. https://yourblog.ghost.io
+kaggle_dataset: "YOUR-KAGGLE-USERNAME/asx-markets-lab-daily"
+hf_dataset: "YOUR-HF-USERNAME/asx-markets-lab-daily"
+google_sheet_id: ""                 # sheet shared with the service account; feeds Tableau Public and Power BI

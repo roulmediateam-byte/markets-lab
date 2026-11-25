@@ -1,0 +1,7 @@
+out/
+__pycache__/
+*.pyc
+pkg/dist/
+hf/out/
+numerai/features.json
+data/export/

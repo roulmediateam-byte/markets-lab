@@ -1,0 +1,15 @@
+# Publishes pkg/ to PyPI when you push a tag like v0.1.0. Set up "trusted publishing" on pypi.org first (no token needed).
+name: pypi
+on: {push: {tags: ["v*"]}}
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions: {id-token: write}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install build && python -m build pkg
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with: {packages-dir: pkg/dist}
