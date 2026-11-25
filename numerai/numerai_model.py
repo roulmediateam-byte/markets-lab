@@ -38,6 +38,6 @@ else:
     if idc: live = live.set_index(idc)          # v6 files carry the row id as a column
     preds = lgb.Booster(model_file="numerai/model.txt").predict(prep(live[feats]))
     out = pd.Series(preds, index=live.index).rank(pct=True).to_frame("prediction"); out.to_csv("/tmp/preds.csv")
-    models = {k.lower(): v for k, v in napi.get_models().items()}
-    mid = models[os.environ["NUMERAI_MODEL_NAME"].lower()]
+    # model id from the public profile, so an upload-only API key is enough
+    mid = os.environ.get("NUMERAI_MODEL_ID") or NumerAPI().public_user_profile(os.environ["NUMERAI_MODEL_NAME"].lower())["id"]
     print(napi.upload_predictions("/tmp/preds.csv", model_id=mid))
