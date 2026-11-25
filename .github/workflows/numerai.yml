@@ -4,6 +4,7 @@ on:
   schedule: [{cron: "30 14 * * 2-6"}]
   workflow_dispatch:
     inputs: {mode: {description: "train or submit", default: "submit"}}
+permissions: {contents: write}
 jobs:
   run:
     runs-on: ubuntu-latest
@@ -16,4 +17,4 @@ jobs:
       - run: python numerai/numerai_model.py ${{ github.event.inputs.mode || 'submit' }}
       - run: |
           git config user.name "markets-lab-bot"; git config user.email "markets-lab-bot@users.noreply.github.com"
-          git add numerai/*.txt numerai/*.json 2>/dev/null; git commit -m "Numerai $(date -u +%F)" && git pull --rebase && git push || true
+          git add -f numerai/model.txt || true; git commit -m "Numerai $(date -u +%F)" && git pull --rebase && git push || true
