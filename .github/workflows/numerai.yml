@@ -12,7 +12,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: "3.12"}
-      - run: pip install numerapi pandas pyarrow lightgbm
+      - run: pip install numerapi pandas pyarrow lightgbm scikit-learn
       - run: python numerai/numerai_model.py ${{ github.event.inputs.mode || 'submit' }}
       - run: |
           git config user.name "markets-lab-bot"; git config user.email "markets-lab-bot@users.noreply.github.com"
