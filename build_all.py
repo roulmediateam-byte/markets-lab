@@ -2,7 +2,7 @@
 Run locally with:  DEMO=1 python build_all.py"""
 import os, sys, json, glob, importlib, traceback, html, shutil
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from lib.core import OUT, SITE, CFG, TODAY, DEMO
+from lib.core import OUT, SITE, CFG, TODAY, DEMO, ROOT
 from lib import ai, site
 
 def run_trackers():
@@ -24,7 +24,17 @@ def main():
     if not results: print("Nothing to publish today"); return
     notes = {r.id: ai.write(f"Write a short note for the section '{r.title}'.", r.facts) for r in results}
     lead = ai.write("Write a two-sentence lead summarising today's market log.", [r.headline for r in results if r.headline], 45)
-    site.write_day([site.section(r, notes[r.id]) for r in results], lead); site.write_trackers_index(results)
+    # keep every tracker on the page: new sections today, plus the latest saved section for trackers with no new data
+    secdir = os.path.join(ROOT, "data", "sections"); os.makedirs(secdir, exist_ok=True)
+    new = {r.id: site.section(r, notes[r.id]) for r in results}
+    for tid, h in new.items(): open(os.path.join(secdir, f"{tid}.html"), "w").write(h)
+    order = [os.path.basename(f)[:-3] for f in sorted(glob.glob(os.path.join(os.path.dirname(__file__), "trackers", "t*.py")))]
+    sections = []
+    for tid in order:
+        if tid in new: sections.append(new[tid])
+        elif os.path.exists(os.path.join(secdir, f"{tid}.html")):
+            sections.append(open(os.path.join(secdir, f"{tid}.html")).read().replace("</h2>", "</h2><p class='note'>No new data today; latest available shown.</p>", 1))
+    site.write_day(sections, lead); site.write_trackers_index(results)
     url = f"{CFG['site']['base_url']}/daily/{TODAY}.html"; disc = CFG["site"]["disclaimer"]
     heads = [r.headline for r in results if r.headline and r.id != "t20_recap_video"]
     core = next((r for r in results if r.id == "t00_core_etf"), results[0])
