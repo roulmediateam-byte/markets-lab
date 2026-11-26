@@ -13,6 +13,6 @@ def add_episode(title, summary):
     items = old.split("<!--items-->")[1].split("<!--/items-->")[0] if "<!--items-->" in old else ""
     head = (f"<?xml version='1.0' encoding='UTF-8'?><rss version='2.0' xmlns:itunes='http://www.itunes.com/dtds/podcast-1.0.dtd'><channel>"
             f"<title>Markets Lab Daily</title><link>{base}</link><language>en-au</language><description>Daily two-minute log of ASX and Hong Kong markets, read by a computer voice. {html.escape(CFG['site']['disclaimer'])}</description>"
-            f"<itunes:author>{html.escape(CFG['site']['author'])}</itunes:author><itunes:explicit>false</itunes:explicit><itunes:category text='Business'><itunes:category text='Investing'/></itunes:category>")
+            f"<itunes:author>{html.escape(CFG['site']['author'])}</itunes:author><itunes:owner><itunes:name>{html.escape(CFG['site']['author'])}</itunes:name><itunes:email>lamyeelok16@gmail.com</itunes:email></itunes:owner><itunes:image href='{base}/img/podcast-cover.png'/><itunes:explicit>false</itunes:explicit><itunes:category text='Business'><itunes:category text='Investing'/></itunes:category>")
     open(feed, "w").write(head + "<!--items-->" + item + items + "<!--/items--></channel></rss>")
     return "podcast: episode added"
